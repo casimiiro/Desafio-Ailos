@@ -39,7 +39,10 @@ namespace Questao5.Application.Handlers
             var conta = await _contaCorrenteRepository.ObterPorIdAsync(request.NumeroConta);
             var resultadoValidacao = _validator.Validar(request, conta);
             if (!resultadoValidacao.Sucesso)
+            {
+                await _idempotenciaRepository.SalvarResultadoAsync(request.IdRequisicao, resultadoValidacao, request);
                 return resultadoValidacao;
+            }
 
             var movimento = _movimentoFactory.Criar(conta.IdContaCorrente, request.TipoMovimento, request.Valor);
 
